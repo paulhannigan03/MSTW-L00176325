@@ -1,0 +1,45 @@
+name: Generate Pydoc Documentation
+
+on:
+  push:
+    branches:
+      - main  # Run on changes to the main branch
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      # Step 3: Install dependencies (if any)
+      - name: Install project dependencies
+        run: |
+          pip install --upgrade pip
+          # Add project dependencies here if needed
+          # pip install -r requirements.txt
+
+      # Step 4: Generate Pydoc Documentation
+      - name: Generate pydoc HTML documentation
+        run: |
+          mkdir -p docs  # Create a folder for docs
+          pydoc -w .     # Generate pydoc for all Python files in the current directory
+          mv *.html docs/
+
+      # Step 5: Upload Documentation as an Artifact
+      - name: Upload Documentation
+        uses: actions/upload-artifact@v3
+        with:
+          name: pydoc-html
+          path: docs/
